@@ -159,18 +159,12 @@ function confirmSend(kind){var m=kind==="passdown"?"Passdown ("+SEV.filter(funct
 function resetAsk(){dialog("Confirm Reset","Clear autocalibration (Column K) date and color for AGV #"+rid()+"?\n\nColumn M master layout and Column L will remain untouched.",
   [["Cancel",null],["Clear Autocal (Col K)",executeReset,"d"]])}
 
-function code(){try{return localStorage.getItem("sendCode")||""}catch(e){return ""}}
-function askCode(after,wrong){dialog(wrong?"Send code not accepted":"Send code",(wrong?"The inbox did not accept the code on this phone. ":"")+"Type the send code once. This phone keeps it, and it goes with every send.",
-  [["Cancel",null],["Save",function(){var v=($("codeIn").value||"").trim().toUpperCase();if(!v)return;try{localStorage.setItem("sendCode",v)}catch(e){}setStatus("Send code saved");if(after)after()},"b"]],
-  '<input class="inp" id="codeIn" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Send code">')}
 function transmit(params,done){if(!valid()){setStatus("Error: AGV # is required");done(false);return}
-  if(!code()){askCode(function(){transmit(params,done)});return}
-  params.code=code();
   st.sending=true;setStatus("Transmitting...");render();
   fetch(EXEC_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(params)})
     .then(function(res){return res.json()})
     .then(function(r){st.sending=false;
-      if(r&&r.status==="error"){if(r.needCode){try{localStorage.removeItem("sendCode")}catch(e){}setStatus("Error: send code not accepted");render();done(false);askCode(function(){transmit(params,done)},true);return}setStatus("Error: "+(r.message||"not saved"));render();done(false);return}render();done(true)})
+      if(r&&r.status==="error"){setStatus("Error: "+(r.message||"not saved"));render();done(false);return}render();done(true)})
     .catch(function(e){st.sending=false;setStatus("Error: "+(e&&e.message||e));render();done(false)})}
 function transmitStaged(){var t=st.staged;if(!t)return;
   if(t.col===7||t.col===8||t.col===9){
