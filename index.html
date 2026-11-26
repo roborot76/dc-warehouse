@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DC Warehouse LGV Maintenance</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LGV Maint">
+<style>
+:root{--navyDeep:#12161D;--navy:#1B212B;--accent:#E8590C;--red:#D1242F;--amber:#D97F00;--green:#14935F;--slate:#6B7A94;
+--sGreen:#2ED197;--sAmber:#FFB020;--sRed:#FF5A63;--glow:#FF9A4D;--bg:#F3F4F6;--card:#FFFFFF;--fill:#EEF0F4;--stroke:#E0E3E9;
+--disabled:#D6DAE1;--text:#141A26;--text2:#5E6778}
+@media (prefers-color-scheme:dark){:root{--accent:#FF7A29;--red:#FF5560;--amber:#FFB020;--green:#2ED197;--bg:#0C0F14;--card:#161B24;
+--fill:#212835;--stroke:#2C3544;--disabled:#2A3140;--text:#F3F4F6;--text2:#9AA5B8}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif}
+.top{background:linear-gradient(var(--navyDeep),var(--navy),#2A3140);color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 16px 14px}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar button{background:none;border:0;color:#fff;font-size:20px;padding:6px;min-width:44px;min-height:44px}
+.title b{display:block;font-size:15px;font-weight:800;letter-spacing:1px}.title span{font-size:9px;font-weight:700;letter-spacing:1.4px;opacity:.65}
+.fields{display:flex;align-items:flex-end;gap:12px}
+.fld label{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.6);margin-bottom:5px}
+.fld input{width:100%;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.12);color:#fff;
+font-size:17px;font-weight:700;padding:0 12px;outline:none}
+.fld input::placeholder{color:rgba(255,255,255,.35)}
+.plat{flex:1;min-width:0}.plat .v{display:flex;align-items:center;gap:8px;height:42px;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden}
+.plat .cap{width:4px;height:22px;border-radius:2px;background:var(--glow)}
+.status{margin-top:12px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,.28);border:1px solid rgba(46,209,151,.35)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--sGreen);box-shadow:0 0 6px var(--sGreen)}
+.status span{font:700 11px ui-monospace,Menlo,monospace;color:var(--sGreen);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:6px;padding:5px;margin:12px 16px;background:var(--card);border:1px solid var(--stroke);border-radius:16px}
+.tabs button{flex:1;min-height:54px;border:0;border-radius:12px;background:none;color:var(--text2);font-size:11px;font-weight:700}
+.tabs button.on{background:var(--accent);color:#fff}
+.tabs .ic{display:block;font-size:17px;margin-bottom:2px}
+main{max-width:760px;margin:0 auto;padding:0 16px 40px}
+.card{background:var(--card);border:1px solid var(--stroke);border-radius:22px;padding:18px;box-shadow:0 5px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.ch{display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.ch .ico{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800}
+.ch b{display:block;font-size:12px;font-weight:800;letter-spacing:1.3px}.ch small{font-size:12px;color:var(--text2)}
+.chips{display:grid;gap:8px;margin-bottom:12px}
+.chip{min-height:48px;border-radius:12px;border:1px solid var(--stroke);background:var(--fill);color:var(--text);font-size:13px;font-weight:700;padding:0 6px}
+.chip.on{color:#fff}
+textarea,.inp,select{width:100%;border-radius:14px;border:1px solid var(--stroke);background:var(--fill);color:var(--text);font:15px system-ui;padding:12px;outline:none}
+textarea{min-height:140px;margin-bottom:12px}
+.act{width:100%;min-height:52px;border:0;border-radius:14px;color:#fff;font-size:15px;font-weight:700;background:var(--accent)}
+.act:disabled{background:var(--disabled);color:var(--text2)}
+.out{width:100%;min-height:48px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(209,36,47,.08);color:var(--red);border:1.5px solid var(--red);margin-top:12px}
+.out:disabled{color:var(--text2);border-color:var(--stroke);background:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{min-height:64px;border-radius:12px;border:1px solid var(--stroke);background:var(--fill);color:var(--text);font-size:13px;font-weight:600;padding:6px 8px;position:relative}
+.tile small{display:block;font:700 10px ui-monospace,Menlo,monospace;color:var(--text2);margin-top:3px}
+.tile.sel{border:2px solid var(--accent);background:rgba(232,89,12,.12);color:var(--accent)}.tile.sel small{color:var(--accent)}
+.tile.sel::after{content:"\2713";position:absolute;top:5px;right:8px;font-size:13px}
+.tile:disabled{opacity:.45;border-color:transparent}
+.cal{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:58px;border-radius:14px;border:1px solid var(--stroke);
+background:var(--fill);color:var(--text);padding:10px 14px;text-align:left;margin-bottom:10px}
+.cal b{display:block;font-size:15px}.cal small{font-size:11px;opacity:.8}.cal.sel{border:2px solid var(--accent);color:var(--accent)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.modal.show{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:22px 18px calc(env(safe-area-inset-bottom) + 18px)}
+.sheet h4{margin:0 0 12px;font-size:12px;font-weight:800;letter-spacing:1.4px;color:var(--text2)}
+.mrow{display:flex;gap:14px;align-items:center;width:100%;padding:10px;border-radius:14px;border:1px solid var(--stroke);background:var(--card);
+color:var(--text);text-align:left;margin-bottom:10px}
+.mrow .ico{width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:20px}
+.mrow b{display:block;font-size:17px}.mrow small{font-size:12px;color:var(--text2)}
+.alert{background:var(--card);border-radius:16px;max-width:320px;width:86%;margin:auto;padding:18px;text-align:center}
+.alert h5{margin:0 0 6px;font-size:17px}.alert p{margin:0 0 14px;font-size:13px;color:var(--text2);white-space:pre-line}
+.alert button{width:100%;min-height:44px;border:0;border-top:1px solid var(--stroke);background:none;font-size:16px;color:#0A84FF}
+.alert button.d{color:var(--red);font-weight:700}.alert button.b{font-weight:700}
+.alert input{margin-bottom:12px}
+.lbl{font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0}
+.lbl input{width:auto;flex:1;max-width:230px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="bar">
+    <button aria-label="Start menu" onclick="openMenu()">&#9638;</button>
+    <div class="title"><b>DC WAREHOUSE</b><span>LGV MAINTENANCE</span></div>
+  </div>
+  <div class="fields">
+    <div class="fld" style="width:84px"><label for="agv">AGV #</label><input id="agv" inputmode="numeric" pattern="[0-9]*" placeholder="#" oninput="agvChanged()"></div>
+    <div class="fld plat"><label>PLATFORM</label><div class="v"><span class="cap" id="cap"></span><span id="plat">Enter AGV #</span></div></div>
+    <div class="fld" style="width:92px"><label for="tech">TECH ID</label><input id="tech" placeholder="Initials" autocapitalize="characters" oninput="saveTech()"></div>
+  </div>
+  <div class="status" id="statusBox"><i id="dot"></i><span id="status">Ready</span></div>
+</div>
+
+<nav class="tabs" id="tabs"></nav>
+<main id="main"></main>
+
+<div class="modal" id="menu"><div class="sheet"><h4>WHAT ARE YOU DOING?</h4><div id="menuRows"></div>
+  <p style="font-size:11px;color:var(--text2);text-align:center;margin:4px 0 0">No LGV is pre-selected. Enter the LGV # after you choose.</p></div></div>
+<div class="modal" id="dlg" style="align-items:center"><div class="alert" id="dlgBox"></div></div>
+
+<script>
+var EXEC_URL="https://script.google.com/macros/s/AKfycbyUJkDICslcbYMLW2rUB8CeQOunWyIfFkoLXchvD9IJm9u2d3IavzvSjnna-1KrSHMkzQ/exec";
+var TABS=[["&#128196;","Passdown","Shift notes and status per LGV"],["&#9737;","PLS","PLS sensor adjust / replace"],
+["&#9881;","Hardware","Calibration dates and hardware"]];
+var SEV=[["blue","Routine / Normal","var(--green)"],["orange","Watch / Follow-Up","var(--amber)"],["red","Down / Breakdown","var(--red)"]];
+var st={tab:0,chosen:false,sev:"blue",note:"",pls:"1",act:"ADJUST",staged:null,sending:false};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function agvText(){return $("agv").value.trim()}
+function rid(){var n=parseInt(agvText(),10);return isNaN(n)?0:n}
+function valid(){return agvText()!==""&&rid()>0}
+function platform(){return rid()>=30?"cb30":"reach"}
+function tech(){return $("tech").value}
+function saveTech(){try{localStorage.setItem("savedTechInitials",tech())}catch(e){}}
+function setStatus(m){$("status").textContent=m;var l=m.toLowerCase();
+  var c=st.sending?"var(--sAmber)":(l.indexOf("error")>=0||l.indexOf("fail")>=0)?"var(--sRed)":"var(--sGreen)";
+  $("status").style.color=c;$("dot").style.background=c;$("dot").style.boxShadow="0 0 6px "+c;$("statusBox").style.borderColor=c}
+function agvChanged(){st.staged=null;$("plat").textContent=valid()?(platform()==="cb30"?"CB30 Platform":"Reach Platform"):"Enter AGV #";
+  $("cap").style.background=platform()==="cb30"?"var(--sGreen)":"var(--glow)";render()}
+
+function tabs(){$("tabs").innerHTML=TABS.map(function(t,i){return '<button class="'+(st.tab===i?"on":"")+'" onclick="go('+i+')"><span class="ic">'+t[0]+'</span>'+t[1]+'</button>'}).join("")}
+function go(i){st.tab=i;render()}
+function openMenu(){$("menuRows").innerHTML=TABS.map(function(t,i){return '<button class="mrow" onclick="pick('+i+')"><span class="ico">'+t[0]+'</span><span style="flex:1"><b>'+t[1]+'</b><small>'+t[2]+'</small></span>&#8250;</button>'}).join("");
+  $("menu").classList.add("show")}
+function pick(i){st.chosen=true;$("menu").classList.remove("show");go(i)}
+$("menu").addEventListener("click",function(e){if(e.target===this&&st.chosen)this.classList.remove("show")});
+
+function card(title,sub,icon,body){return '<div class="card"><div class="ch">'+(icon?'<span class="ico">'+icon+'</span>':'')+'<div><b>'+title+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div></div>'+body+'</div>'}
+function render(){tabs();var h="",dis=st.sending||!valid();
+  if(st.tab===0){
+    h=card("SHIFT PASSDOWN LOG","Leave a note for the next shift.","&#128196;",
+      '<div class="chips" style="grid-template-columns:repeat(3,1fr)">'+SEV.map(function(s){var on=st.sev===s[0];
+        return '<button class="chip'+(on?" on":"")+'" style="'+(on?"background:"+s[2]+";border-color:"+s[2]:"")+'" onclick="st.sev=\''+s[0]+'\';render()">'+s[1]+'</button>'}).join("")+'</div>'+
+      '<textarea id="note" placeholder="What happened, what you checked, and what the next shift should follow up on&hellip;" oninput="st.note=this.value;$(\'sendPd\').disabled=st.sending||!valid()||!st.note.trim()">'+esc(st.note)+'</textarea>'+
+      '<button class="act" id="sendPd" style="background:'+SEV.filter(function(s){return s[0]===st.sev})[0][2]+'" onclick="confirmSend(\'passdown\')"'+(dis||!st.note.trim()?" disabled":"")+'>&#10148; Submit Passdown Log</button>')}
+  else if(st.tab===1){
+    h=card("PLS SENSORS (1&ndash;6)","Logged to Column O.","&#9737;",
+      '<div class="chips" style="grid-template-columns:repeat(3,1fr)">'+[1,2,3,4,5,6].map(function(n){var on=st.pls==n;
+        return '<button class="chip'+(on?" on":"")+'" style="'+(on?"background:var(--accent);border-color:var(--accent)":"")+'" onclick="st.pls=\''+n+'\';render()">PLS #'+n+'</button>'}).join("")+'</div>'+
+      '<div class="chips" style="grid-template-columns:1fr 1fr">'+["ADJUST","REPLACE"].map(function(a){var on=st.act===a,c=a==="REPLACE"?"var(--slate)":"var(--accent)";
+        return '<button class="chip'+(on?" on":"")+'" style="'+(on?"background:"+c+";border-color:"+c:"")+'" onclick="st.act=\''+a+'\';render()">'+a+'</button>'}).join("")+'</div>'+
+      '<button class="act" style="background:'+(st.act==="REPLACE"?"var(--slate)":"var(--accent)")+'" onclick="confirmSend(\'pls\')"'+(dis?" disabled":"")+'>&#128295; Log PLS #'+st.pls+' '+st.act+'</button>')}
+  else{var p=platform();
+    h=card("DRIVE &amp; LOAD","Dimmed items don't apply to the "+(p==="cb30"?"CB30 Platform":"Reach Platform")+".","&#9881;",'<div class="grid2">'+
+        tile("Drive Pair (Col B)",2,p==="cb30")+tile("Drive Single (Col C)",3,p==="reach")+tile("Load (Col D)",4,p==="reach")+tile("Steer (Col E)",5,p==="cb30")+'</div>')+
+      card("CHAINS","","&#128279;",'<div class="grid2">'+tile("free lift (BL6) [Col G]",7,p==="reach")+tile("free lift (BL8) [Col H]",8,p==="cb30")+tile("main chains [Col I]",9,true)+'</div>')+
+      card("SENSORS &amp; CHARGING","","&#9889;",'<div class="grid2">'+tile("Laser Nav (Col N)",14,true)+tile("Charger Plates (Col P)",16,true)+tile("Filters (Col Q)",17,true)+tile("Absolute encoder (Col R)",18,true)+'</div>')+
+      card("CALIBRATION","","&#9678;",cal("autocalibration",11,"Col K (Inherits Footer M Color)")+cal("Manual calibration + (PLS)",12,"Col L (Col M Untouched)"))+
+      '<button class="act" onclick="transmitStaged()"'+(!st.staged||dis?" disabled":"")+'>&#11014; '+(st.staged?"Transmit: "+esc(st.staged.name):"Select a target to transmit")+'</button>'+
+      '<button class="out" onclick="resetAsk()"'+(dis?" disabled":"")+'>&#8634; Reset Autocal (Col K)</button>'}
+  $("main").innerHTML=h}
+function tile(name,col,en){var m=name.match(/^(.*?)\s*[\(\[]Col ([A-Z])[\)\]]$/),t=m?m[1]:name,tag=m?"COL "+m[2]:"",sel=st.staged&&st.staged.col===col;
+  return '<button class="tile'+(sel?" sel":"")+'" onclick="stage(\''+name.replace(/'/g,"\\'")+'\','+col+')"'+(!en||st.sending?" disabled":"")+'>'+esc(t)+(tag?'<small>'+tag+'</small>':'')+'</button>'}
+function cal(name,col,desc){var sel=st.staged&&st.staged.col===col;
+  return '<button class="cal'+(sel?" sel":"")+'" onclick="stage(\''+name+'\','+col+')"><span><b>'+esc(name)+'</b><small>'+desc+'</small></span><span>'+(sel?"&#10003;":"&#9675;")+'</span></button>'}
+function stage(name,col){st.staged=(st.staged&&st.staged.col===col)?null:{name:name,col:col};render()}
+
+function dialog(title,msg,buttons,extra){$("dlgBox").innerHTML='<h5>'+title+'</h5><p>'+esc(msg)+'</p>'+(extra||"")+buttons.map(function(b,i){return '<button class="'+(b[2]||"")+'" id="db'+i+'">'+b[0]+'</button>'}).join("");
+  buttons.forEach(function(b,i){$("db"+i).onclick=function(){$("dlg").classList.remove("show");if(b[1])b[1]()}});$("dlg").classList.add("show")}
+function confirmSend(kind){var m=kind==="passdown"?"Passdown ("+SEV.filter(function(s){return s[0]===st.sev})[0][1]+") will be logged for AGV# "+rid()+".":
+  "PLS #"+st.pls+" "+st.act+" will be logged for AGV# "+rid()+".";
+  dialog("Send to AGV# "+rid()+"?",m,[["Cancel",null],["Send",function(){kind==="passdown"?sendPassdown():sendPLS()},"b"]])}
+function resetAsk(){dialog("Confirm Reset","Clear autocalibration (Column K) date and color for AGV #"+rid()+"?\n\nColumn M master layout and Column L will remain untouched.",
+  [["Cancel",null],["Clear Autocal (Col K)",executeReset,"d"]])}
+
+function transmit(params,done){if(!valid()){setStatus("Error: AGV # is required");done(false);return}
+  st.sending=true;setStatus("Transmitting...");render();
+  fetch(EXEC_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(params)})
+    .then(function(res){return res.json()})
+    .then(function(r){st.sending=false;
+      if(r&&r.status==="error"){setStatus("Error: "+(r.message||"not saved"));render();done(false);return}render();done(true)})
+    .catch(function(e){st.sending=false;setStatus("Error: "+(e&&e.message||e));render();done(false)})}
+function transmitStaged(){var t=st.staged;if(!t)return;
+  if(t.col===7||t.col===8||t.col===9){
+    dialog("Chain Maintenance Log","Select whether you are logging an elongation inspection reading or installing brand new chains on "+t.name+".",
+      [["Log Wear Inspection",function(){var w=($("wear").value||"").trim();transmitChainLog(w===""?null:w)},"b"],["Brand New Chains (Reset)",function(){transmitChainLog(null)}],["Cancel",function(){st.staged=null;render()}]],
+      '<input class="inp" id="wear" inputmode="decimal" placeholder="Wear % (e.g. 2.1)">');return}
+  transmit({mode:"hardware",robotID:String(rid()),col:String(t.col),component:t.name,tech:tech()},function(ok){if(ok){setStatus(t.name+" updated for AGV# "+rid());st.staged=null;render()}})}
+function transmitChainLog(w){var t=st.staged;if(!t)return;var p={mode:"hardware",robotID:String(rid()),col:String(t.col),component:t.name,tech:tech()};
+  if(w!==null)p.wear=w.replace(/%/g,"")+"%";
+  transmit(p,function(ok){if(ok){setStatus((w!==null?t.name+" ("+w+"% wear)":t.name+" (New)")+" updated for AGV# "+rid());st.staged=null;render()}})}
+function executeReset(){transmit({mode:"hardware",robotID:String(rid()),component:"reset",clearRow:"true"},function(ok){if(ok)setStatus("Column K cleared for AGV# "+rid())})}
+function sendPassdown(){transmit({mode:"passdown",robotID:String(rid()),severity:st.sev,tech:tech(),note:st.note},function(ok){if(ok){st.note="";setStatus("Passdown logged for AGV# "+rid());render()}})}
+function sendPLS(){transmit({mode:"hardware",robotID:String(rid()),col:"15",component:"pls",plsSensor:st.pls,plsAction:st.act,tech:tech()},function(ok){if(ok)setStatus("PLS #"+st.pls+" "+st.act+" sent for AGV# "+rid())})}
+try{$("tech").value=localStorage.getItem("savedTechInitials")||"TECH"}catch(e){$("tech").value="TECH"}
+render();openMenu();
+</script>
+</body>
+</html>
